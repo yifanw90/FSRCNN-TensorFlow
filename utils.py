@@ -241,7 +241,7 @@ def test_input_setup(config):
   padding = abs(image_size - label_size) / 2 # (21 - 11) / 2 = 5
   label_padding = label_size / scale # 21 / 3 = 7
 
-  pic_index = 1 # Choose image based on lexicographical order
+  pic_index = 2 # Index of image based on lexicographical order in data folder
   input_, label_ = preprocess(data[pic_index], config.scale)
 
   if len(input_.shape) == 3:

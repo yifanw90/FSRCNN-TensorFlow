@@ -22,19 +22,17 @@ To use FSCRNN-s instead of FSCRNN: `python main.py --fast True`
 
 Check `main.py` for all the possible flags
 
-Includes script `expand_data.py` which scales and rotates all the images in your training set to expand it:
-<br>
-`python expand_data.py Train`
+Also includes script `expand_data.py` which scales and rotates all the images in the specified training set to expand it
 
 ## Result
 
 <br><br>
 Original butterfly image:
-![orig](https://github.com/tegg89/SRCNN-Tensorflow/blob/master/result/orig.png)<br>
+![orig](https://github.com/drakelevy/FSRCNN-Tensorflow/blob/master/result/original.png)<br>
 Bicubic interpolated image:
-![bicubic](https://github.com/tegg89/SRCNN-Tensorflow/blob/master/result/bicubic.png)<br>
+![bicubic](https://github.com/drakelevy/FSRCNN-Tensorflow/blob/master/result/bicubic.png)<br>
 Super-resolved image:
-![srcnn](https://github.com/tegg89/SRCNN-Tensorflow/blob/master/result/srcnn.png)
+![srcnn](https://github.com/drakelevy/FSRCNN-Tensorflow/blob/master/result/fsrcnn.png)
 
 ## References
 * [tegg89/SRCNN-Tensorflow](https://github.com/tegg89/SRCNN-Tensorflow)

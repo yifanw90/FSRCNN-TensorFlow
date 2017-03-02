@@ -103,11 +103,11 @@ class FSRCNN(object):
     if self.params:
       save_params(self.sess, self.weights, self.biases)
     elif self.train:
-      self.train()
+      self.run_train()
     else:
-      self.test()
+      self.run_test()
 
-  def train(self):
+  def run_train(self):
     start_time = time.time()
     print("Beginning training setup...")
     if self.threads == 1:
@@ -163,7 +163,7 @@ class FSRCNN(object):
     # os.system(notify_command)
 
   
-  def test(self):
+  def run_test(self):
     nx, ny = test_input_setup(self)
     data_dir = os.path.join('./{}'.format(self.checkpoint_dir), "test.h5")
     test_data, test_label = read_data(data_dir)
