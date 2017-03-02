@@ -17,9 +17,9 @@ import tensorflow as tf
 from PIL import Image
 import pdb
 
-
+# Based on http://mmlab.ie.cuhk.edu.hk/projects/FSRCNN.html
 class FSRCNN(object):
-
+  
   def __init__(self, sess, config):
     self.sess = sess
     self.fast = config.fast
@@ -36,12 +36,13 @@ class FSRCNN(object):
     self.params = config.params
 
     # Different image/label sub-sizes for different scaling factors x2, x3, x4
-    scale_factors = [[10, 20], [11, 21], [6, 24]]
+    scale_factors = [[14, 20], [11, 21], [10, 24]]
     self.image_size, self.label_size = scale_factors[self.scale - 2]
+    # Testing uses different strides to ensure sub-images line up correctly
     if not self.train:
       self.stride = [10, 7, 6][self.scale - 2]
 
-    # Different model layer counts/filter sizes for FSRCNN vs FSRCNN-s (fast)
+    # Different model layer counts and filter sizes for FSRCNN vs FSRCNN-s (fast), (s, d, m) in paper
     model_params = [[56, 12, 4], [32, 5, 1]]
     self.model_params = model_params[self.fast]
     
@@ -57,7 +58,7 @@ class FSRCNN(object):
     # Batch size differs in training vs testing
     self.batch = tf.placeholder(tf.int32, shape=[], name='batch')
 
-    # FSCRNN-s (fast) has smaller filters and less layers but can achieve realtime performance
+    # FSCRNN-s (fast) has smaller filters and less layers but can achieve faster performance
     s, d, m = self.model_params
 
     expand_weight, deconv_weight = 'w{}'.format(m + 3), 'w{}'.format(m + 4)
