@@ -11,22 +11,21 @@ TensorFlow implementation of the Fast Super-Resolution Convolutional Neural Netw
 ## Usage
 For training: `python main.py`
 <br>
-Can specify epochs, learning rate, data directory, etc:
-<br>
-`python main.py --epochs 10 --learning_rate 0.0001 --data_dir Train`
-<br>
-<br>
 For testing: `python main.py --train False`
 
 To use FSCRNN-s instead of FSCRNN: `python main.py --fast True`
 
+Can specify epochs, learning rate, data directory, etc:
+<br>
+`python main.py --epochs 10 --learning_rate 0.0001 --data_dir Train`
+<br>
 Check `main.py` for all the possible flags
 
 Also includes script `expand_data.py` which scales and rotates all the images in the specified training set to expand it
 
 ## Result
 
-<br><br>
+<br>
 Original butterfly image:
 <br>
 ![orig](https://github.com/drakelevy/FSRCNN-Tensorflow/blob/master/result/original.png)<br>
