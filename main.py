@@ -18,7 +18,7 @@ flags.DEFINE_integer("stride", 4, "The size of stride to apply to input image [4
 flags.DEFINE_string("checkpoint_dir", "checkpoint", "Name of checkpoint directory [checkpoint]")
 flags.DEFINE_string("output_dir", "result", "Name of test output directory [result]")
 flags.DEFINE_string("data_dir", "FastTrain", "Name of data directory to train on [FastTrain]")
-flags.DEFINE_boolean("is_train", True, "True for training, False for testing [True]")
+flags.DEFINE_boolean("train", True, "True for training, false for testing [True]")
 flags.DEFINE_integer("threads", 1, "Number of processes to pre-process data with [1]")
 flags.DEFINE_boolean("params", False, "Save weight and bias parameters [False]")
 

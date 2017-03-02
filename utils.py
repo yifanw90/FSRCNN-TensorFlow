@@ -65,7 +65,7 @@ def prepare_data(sess, dataset):
     
     For train dataset, output data would be ['.../t1.bmp', '.../t2.bmp', ..., '.../t99.bmp']
   """
-  if FLAGS.is_train:
+  if FLAGS.train:
     filenames = os.listdir(dataset)
     data_dir = os.path.join(os.getcwd(), dataset)
   else:
@@ -77,9 +77,9 @@ def prepare_data(sess, dataset):
 def make_data(sess, checkpoint_dir, data, label):
   """
   Make input data as h5 file format
-  Depending on 'is_train' (flag value), savepath would be changed.
+  Depending on 'train' (flag value), savepath would be changed.
   """
-  if FLAGS.is_train:
+  if FLAGS.train:
     savepath = os.path.join(os.getcwd(), '{}/train.h5'.format(checkpoint_dir))
   else:
     savepath = os.path.join(os.getcwd(), '{}/test.h5'.format(checkpoint_dir))

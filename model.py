@@ -23,7 +23,7 @@ class FSRCNN(object):
   def __init__(self, sess, config):
     self.sess = sess
     self.fast = config.fast
-    self.is_train = config.is_train
+    self.train = config.train
     self.c_dim = config.c_dim
     self.is_grayscale = (self.c_dim == 1)
     self.epoch = config.epoch
@@ -38,7 +38,7 @@ class FSRCNN(object):
     # Different image/label sub-sizes for different scaling factors x2, x3, x4
     scale_factors = [[10, 20], [11, 21], [6, 24]]
     self.image_size, self.label_size = scale_factors[self.scale - 2]
-    if not self.is_train:
+    if not self.train:
       self.stride = [10, 7, 6][self.scale - 2]
 
     # Different model layer counts/filter sizes for FSRCNN vs FSRCNN-s (fast)
@@ -102,7 +102,7 @@ class FSRCNN(object):
 
     if self.params:
       save_params(self.sess, self.weights, self.biases)
-    elif self.is_train:
+    elif self.train:
       self.train()
     else:
       self.test()
