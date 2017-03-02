@@ -15,9 +15,12 @@ Can specify epochs, learning rate, data directory, etc:
 <br>
 `python main.py --epochs 10 --learning_rate 0.0001 --data_dir Train`
 <br>
+<br>
 For testing: `python main.py --is_train False`
 
 To use FSCRNN-s instead of FSCRNN: `python main.py --fast True`
+
+Check `main.py` for all the possible flags
 
 Includes script `expand_data.py` which scales and rotates all the images in your training set to expand it:
 <br>
