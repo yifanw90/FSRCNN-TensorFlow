@@ -12,7 +12,6 @@ import struct
 import tensorflow as tf
 from PIL import Image  
 from scipy.misc import imread
-from scipy.ndimage import interpolation
 import numpy as np
 from multiprocessing import Pool, Lock, active_children
 
@@ -39,13 +38,9 @@ def preprocess(path, scale=3):
   Preprocess single image file 
     (1) Read original image as YCbCr format (and grayscale as default)
     (2) Normalize
-    (3) Downsampled by scale factor using bicubic interpolation
-
-  Args:
-    path: file path of desired file
-    input_: image downsampled (low-resolution)
-    label_: image with original resolution (high-resolution)
+    (3) Downsampled by scale factor
   """
+
   image = Image.open(path).convert('L')
   (width, height) = image.size
   label_ = np.array(list(image.getdata())).astype(np.float).reshape((height, width)) / 255
@@ -60,10 +55,6 @@ def preprocess(path, scale=3):
 
   (width, height) = scaled_image.size
   input_ = np.array(list(scaled_image.getdata())).astype(np.float).reshape((height, width))
-
-  if FLAGS.save_image and not FLAGS.is_train:
-    array_image_save(label_ * 255, "sample/test_image_original.bmp")
-    array_image_save(input_ * 255, "sample/test_image_downsampled.bmp")
 
   return input_, label_
 
@@ -88,7 +79,6 @@ def make_data(sess, checkpoint_dir, data, label):
   Make input data as h5 file format
   Depending on 'is_train' (flag value), savepath would be changed.
   """
-  checkpoint_dir = 'fast_{}'.format(checkpoint_dir)
   if FLAGS.is_train:
     savepath = os.path.join(os.getcwd(), '{}/train.h5'.format(checkpoint_dir))
   else:
@@ -132,8 +122,7 @@ def train_input_worker(args):
   image_data, config = args
   image_size, label_size, stride, scale, save_image = config
 
-  single_input_sequence = []
-  single_label_sequence = []
+  single_input_sequence, single_label_sequence = [], []
   padding = abs(image_size - label_size) / 2 # (21 - 11) / 2 = 5
   label_padding = label_size / scale # 21 / 3 = 7
 
@@ -186,8 +175,7 @@ def thread_train_setup(config):
 
   print("All worker processes done!")
 
-  sub_input_sequence = []
-  sub_label_sequence = []
+  sub_input_sequence, sub_label_sequence = [], []
 
   for image in range(len(results)):
     single_input_sequence, single_label_sequence = results[image]
@@ -210,8 +198,7 @@ def train_input_setup(config):
   # Load data path
   data = prepare_data(sess, dataset=config.data_dir)
 
-  sub_input_sequence = []
-  sub_label_sequence = []
+  sub_input_sequence, sub_label_sequence = [], []
   padding = abs(image_size - label_size) / 2 # (21 - 11) / 2 = 5
   label_padding = label_size / scale # 21 / 3 = 7
 
@@ -250,8 +237,7 @@ def test_input_setup(config):
   # Load data path
   data = prepare_data(sess, dataset="Test")
 
-  sub_input_sequence = []
-  sub_label_sequence = []
+  sub_input_sequence, sub_label_sequence = [], []
   padding = abs(image_size - label_size) / 2 # (21 - 11) / 2 = 5
   label_padding = label_size / scale # 21 / 3 = 7
 

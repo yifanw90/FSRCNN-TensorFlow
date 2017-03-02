@@ -24,12 +24,11 @@ class FSRCNN(object):
     self.sess = sess
     self.fast = config.fast
     self.is_train = config.is_train
-    self.save_image = config.save_image
     self.c_dim = config.c_dim
     self.is_grayscale = (self.c_dim == 1)
     self.epoch = config.epoch
-    self.stride = config.stride
     self.scale = config.scale
+    self.stride = config.stride
     self.batch_size = config.batch_size
     self.learning_rate = config.learning_rate
     self.momentum = config.momentum
@@ -39,13 +38,15 @@ class FSRCNN(object):
     # Different image/label sub-sizes for different scaling factors x2, x3, x4
     scale_factors = [[10, 20], [11, 21], [6, 24]]
     self.image_size, self.label_size = scale_factors[self.scale - 2]
+    if not self.is_train:
+      self.stride = [10, 7, 6][self.scale - 2]
 
     # Different model layer counts/filter sizes for FSRCNN vs FSRCNN-s (fast)
     model_params = [[56, 12, 4], [32, 5, 1]]
     self.model_params = model_params[self.fast]
     
     self.checkpoint_dir = config.checkpoint_dir
-    self.sample_dir = config.sample_dir
+    self.output_dir = config.output_dir
     self.data_dir = config.data_dir
     self.build_model()
 
@@ -139,6 +140,7 @@ class FSRCNN(object):
           print("Epoch: [%2d], step: [%2d], time: [%4.4f], loss: [%.8f]" \
             % ((ep+1), counter, time.time() - start_time, err))
 
+        # Save every 500 steps
         if counter % 500 == 0:
           self.save(self.checkpoint_dir, counter)
 
@@ -154,10 +156,11 @@ class FSRCNN(object):
     print("Start Average: [%.6f], End Average: [%.6f], Improved: [%.2f%%]" \
       % (start_average, end_average, 100 - (100*end_average/start_average)))
 
-    title = "Training complete - FSRCNN"
-    notification = "{}-{}-{} done training after {} epochs".format(self.image_size, self.label_size, self.stride, self.epoch);
-    notify_command = 'notify-send "{}" "{}"'.format(title, notification)
-    os.system(notify_command)
+    # Linux desktop notification when training has been completed
+    # title = "Training complete - FSRCNN"
+    # notification = "{}-{}-{} done training after {} epochs".format(self.image_size, self.label_size, self.stride, self.epoch);
+    # notify_command = 'notify-send "{}" "{}"'.format(title, notification)
+    # os.system(notify_command)
 
   
   def test(self):
@@ -173,7 +176,7 @@ class FSRCNN(object):
 
     result = merge(result, [nx, ny])
     result = result.squeeze()
-    image_path = os.path.join(os.getcwd(), self.sample_dir)
+    image_path = os.path.join(os.getcwd(), self.output_dir)
     image_path = os.path.join(image_path, "test_image.png")
 
     array_image_save(result * 255, image_path)
@@ -214,8 +217,6 @@ class FSRCNN(object):
   def save(self, checkpoint_dir, step):
     model_name = "FSRCNN.model"
     model_dir = "%s_%s" % ("fsrcnn", self.label_size)
-    if self.fast:
-      checkpoint_dir = 'fast_{}'.format(checkpoint_dir)
     checkpoint_dir = os.path.join(checkpoint_dir, model_dir)
 
     if not os.path.exists(checkpoint_dir):
@@ -228,8 +229,6 @@ class FSRCNN(object):
   def load(self, checkpoint_dir):
     print(" [*] Reading checkpoints...")
     model_dir = "%s_%s" % ("fsrcnn", self.label_size)
-    if self.fast:
-      checkpoint_dir = 'fast_{}'.format(checkpoint_dir)
     checkpoint_dir = os.path.join(checkpoint_dir, model_dir)
 
     ckpt = tf.train.get_checkpoint_state(checkpoint_dir)

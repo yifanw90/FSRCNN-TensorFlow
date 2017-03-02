@@ -1,25 +1,27 @@
-# FSRCNN-Tensorflow
-TensorFlow implementation of the Fast Super-Resolution Convolutional Neural Network (FSRCNN). This implements two models, FSRCNN which is more accurate and FSRCNN-s which is faster (approaches real-time performance). Based on this [project](http://mmlab.ie.cuhk.edu.hk/projects/FSRCNN.html).
+# FSRCNN-TensorFlow
+TensorFlow implementation of the Fast Super-Resolution Convolutional Neural Network (FSRCNN). This implements two models: FSRCNN which is more accurate and FSRCNN-s which is faster (approaches real-time performance). Based on this [project](http://mmlab.ie.cuhk.edu.hk/projects/FSRCNN.html).
 
 ## Prerequisites
+ * Python 2.7
  * TensorFlow
- * Scipy version > 0.18 ('mode' option from scipy.misc.imread function)
+ * Scipy version > 0.18
  * h5py
  * PIL
 
 ## Usage
-For training , `python main.py`
-Can specify epochs, learning rate,  `python main.py --epochs 10`
+For training: `python main.py`
 <br>
-For testing, `python main.py --is_train False`
+Can specify epochs, learning rate, data directory, etc:  `python main.py --epochs 10 --learning_rate 0.0001 --data_dir Train`
+<br>
+For testing: `python main.py --is_train False`
 
-To use FSCRNN-s over FSCRNN , `python main.py --fast True`
+To use FSCRNN-s instead of FSCRNN: `python main.py --fast True`
 
-Includes script expand_data.py which scales and rotates all the images in your training set to expand your dataset just like in the paper
-`python expand_data.py Train`
+Includes script `expand_data.py` which scales and rotates all the images in your training set to expand it: `python expand_data.py Train`
 
 ## Result
-After training 15,000 epochs, I got similar super-resolved image to reference paper. Training time takes 12 hours 16 minutes and 1.41 seconds. My desktop performance is Intel I7-6700 CPU, GTX970, and 16GB RAM. Result images are shown below.<br><br>
+
+<br><br>
 Original butterfly image:
 ![orig](https://github.com/tegg89/SRCNN-Tensorflow/blob/master/result/orig.png)<br>
 Bicubic interpolated image:

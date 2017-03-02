@@ -16,7 +16,7 @@ flags.DEFINE_integer("c_dim", 1, "Dimension of image color [1]")
 flags.DEFINE_integer("scale", 3, "The size of scale factor for preprocessing input image [3]")
 flags.DEFINE_integer("stride", 4, "The size of stride to apply to input image [4]")
 flags.DEFINE_string("checkpoint_dir", "checkpoint", "Name of checkpoint directory [checkpoint]")
-flags.DEFINE_string("test_dir", "result", "Name of test result directory [result]")
+flags.DEFINE_string("output_dir", "result", "Name of test output directory [result]")
 flags.DEFINE_string("data_dir", "FastTrain", "Name of data directory to train on [FastTrain]")
 flags.DEFINE_boolean("is_train", True, "True for training, False for testing [True]")
 flags.DEFINE_integer("threads", 1, "Number of processes to pre-process data with [1]")
@@ -29,10 +29,12 @@ pp = pprint.PrettyPrinter()
 def main(_):
   pp.pprint(flags.FLAGS.__flags)
 
+  if FLAGS.fast:
+    FLAGS.checkpoint_dir = 'fast_{}'.format(FLAGS.checkpoint_dir)
   if not os.path.exists(FLAGS.checkpoint_dir):
     os.makedirs(FLAGS.checkpoint_dir)
-  if not os.path.exists(FLAGS.sample_dir):
-    os.makedirs(FLAGS.sample_dir)
+  if not os.path.exists(FLAGS.output_dir):
+    os.makedirs(FLAGS.output_dir)
 
 
   with tf.Session() as sess:
