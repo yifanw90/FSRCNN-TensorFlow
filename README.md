@@ -1,5 +1,5 @@
 # FSRCNN-TensorFlow
-TensorFlow implementation of the Fast Super-Resolution Convolutional Neural Network (FSRCNN). This implements two models: FSRCNN which is more accurate and FSRCNN-s which is faster (approaches real-time performance). Based on this [project](http://mmlab.ie.cuhk.edu.hk/projects/FSRCNN.html).
+TensorFlow implementation of the Fast Super-Resolution Convolutional Neural Network (FSRCNN). This implements two models: FSRCNN which is more accurate but slower and FSRCNN-s which is faster but less accurate. Based on this [project](http://mmlab.ie.cuhk.edu.hk/projects/FSRCNN.html).
 
 ## Prerequisites
  * Python 2.7
@@ -11,13 +11,17 @@ TensorFlow implementation of the Fast Super-Resolution Convolutional Neural Netw
 ## Usage
 For training: `python main.py`
 <br>
-Can specify epochs, learning rate, data directory, etc:  `python main.py --epochs 10 --learning_rate 0.0001 --data_dir Train`
+Can specify epochs, learning rate, data directory, etc:
+<br>
+`python main.py --epochs 10 --learning_rate 0.0001 --data_dir Train`
 <br>
 For testing: `python main.py --is_train False`
 
 To use FSCRNN-s instead of FSCRNN: `python main.py --fast True`
 
-Includes script `expand_data.py` which scales and rotates all the images in your training set to expand it: `python expand_data.py Train`
+Includes script `expand_data.py` which scales and rotates all the images in your training set to expand it:
+<br>
+`python expand_data.py Train`
 
 ## Result
 
