@@ -39,6 +39,12 @@ Super-resolved image:
 
 ![srcnn](https://github.com/drakelevy/FSRCNN-Tensorflow/blob/master/result/fsrcnn.png?raw=true)
 
+## TODO
+
+* Add RGB support (Increase each layer depth to 3)
+* Speed up pre-processing for large datasets
+* Set learning rate for deconvolutional layer to 1e-4 (vs 1e-3 for the rest)
+
 ## References
 
 * [tegg89/SRCNN-Tensorflow](https://github.com/tegg89/SRCNN-Tensorflow)

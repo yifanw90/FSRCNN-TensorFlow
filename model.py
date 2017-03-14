@@ -207,8 +207,10 @@ class FSRCNN(object):
 
     return conv_deconv
 
-  # PreLU tensorflow implementation
   def prelu(self, _x, i):
+    """
+    PreLU tensorflow implementation
+    """
     alphas = tf.get_variable('alpha{}'.format(i), _x.get_shape()[-1], initializer=tf.constant_initializer(0.0), dtype=tf.float32)
     pos = tf.nn.relu(_x)
     neg = alphas * (_x - abs(_x)) * 0.5

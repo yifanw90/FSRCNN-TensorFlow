@@ -25,6 +25,8 @@ def read_data(path):
   
   Args:
     path: file path of desired file
+
+  Returns:
     data: '.h5' file format that contains train data values
     label: '.h5' file format that contains train label values
   """
@@ -38,7 +40,7 @@ def preprocess(path, scale=3):
   Preprocess single image file 
     (1) Read original image as YCbCr format (and grayscale as default)
     (2) Normalize
-    (3) Downsampled by scale factor
+    (3) Downsampled by scale factor (using anti-aliasing)
   """
 
   image = Image.open(path).convert('L')
@@ -123,8 +125,8 @@ def train_input_worker(args):
   image_size, label_size, stride, scale, save_image = config
 
   single_input_sequence, single_label_sequence = [], []
-  padding = abs(image_size - label_size) / 2 # (21 - 11) / 2 = 5
-  label_padding = label_size / scale # 21 / 3 = 7
+  padding = abs(image_size - label_size) / 2 # eg. for 3x: (21 - 11) / 2 = 5
+  label_padding = label_size / scale # eg. for 3x: 21 / 3 = 7
 
   input_, label_ = preprocess(image_data, scale)
 
@@ -136,7 +138,8 @@ def train_input_worker(args):
   for x in range(0, h - image_size - padding + 1, stride):
     for y in range(0, w - image_size - padding + 1, stride):
       sub_input = input_[x + padding : x + padding + image_size, y + padding : y + padding + image_size]
-      sub_label = label_[(x + label_padding) * scale : (x + label_padding) * scale + label_size, (y + label_padding) * scale : (y + label_padding) * scale + label_size]
+      x_loc, y_loc = x + label_padding, y + label_padding
+      sub_label = label_[x_loc * scale : x_loc * scale + label_size, y_loc * scale : y_loc * scale + label_size]
 
       sub_input = sub_input.reshape([image_size, image_size, 1])
       sub_label = sub_label.reshape([label_size, label_size, 1])
@@ -146,7 +149,15 @@ def train_input_worker(args):
 
   return [single_input_sequence, single_label_sequence]
 
+
 def thread_train_setup(config):
+  """
+  Spawns |config.threads| worker processes to pre-process the data
+
+  This has not been extensively tested so use at your own risk.
+  Also this is technically multiprocessing not threading, I just say thread
+  because it's shorter to type.
+  """
   sess = config.sess
 
   # Load data path
@@ -155,7 +166,7 @@ def thread_train_setup(config):
   # Initialize multiprocessing pool with # of processes = config.threads
   pool = Pool(config.threads)
 
-  # Distribute images_per_thread images across each worker
+  # Distribute |images_per_thread| images across each worker process
   config_values = [config.image_size, config.label_size, config.stride, config.scale, config.save_image]
   images_per_thread = len(data) / config.threads
   workers = []
@@ -190,7 +201,7 @@ def thread_train_setup(config):
 
 def train_input_setup(config):
   """
-  Read image files and make their sub-images and saved them as a h5 file format.
+  Read image files, make their sub-images, and save them as a h5 file format.
   """
   sess = config.sess
   image_size, label_size, stride, scale = config.image_size, config.label_size, config.stride, config.scale
@@ -199,8 +210,8 @@ def train_input_setup(config):
   data = prepare_data(sess, dataset=config.data_dir)
 
   sub_input_sequence, sub_label_sequence = [], []
-  padding = abs(image_size - label_size) / 2 # (21 - 11) / 2 = 5
-  label_padding = label_size / scale # 21 / 3 = 7
+  padding = abs(image_size - label_size) / 2 # eg. for 3x: (21 - 11) / 2 = 5
+  label_padding = label_size / scale # eg. for 3x: 21 / 3 = 7
 
   for i in xrange(len(data)):
     input_, label_ = preprocess(data[i], scale)
@@ -213,7 +224,8 @@ def train_input_setup(config):
     for x in range(0, h - image_size - padding + 1, stride):
       for y in range(0, w - image_size - padding + 1, stride):
         sub_input = input_[x + padding : x + padding + image_size, y + padding : y + padding + image_size]
-        sub_label = label_[(x + label_padding) * scale : (x + label_padding) * scale + label_size, (y + label_padding) * scale : (y + label_padding) * scale + label_size]
+        x_loc, y_loc = x + label_padding, y + label_padding
+        sub_label = label_[x_loc * scale : x_loc * scale + label_size, y_loc * scale : y_loc * scale + label_size]
 
         sub_input = sub_input.reshape([image_size, image_size, 1])
         sub_label = sub_label.reshape([label_size, label_size, 1])
@@ -229,7 +241,7 @@ def train_input_setup(config):
 
 def test_input_setup(config):
   """
-  Read image files and make their sub-images and saved them as a h5 file format.
+  Read image files, make their sub-images, and save them as a h5 file format.
   """
   sess = config.sess
   image_size, label_size, stride, scale = config.image_size, config.label_size, config.stride, config.scale
@@ -238,10 +250,10 @@ def test_input_setup(config):
   data = prepare_data(sess, dataset="Test")
 
   sub_input_sequence, sub_label_sequence = [], []
-  padding = abs(image_size - label_size) / 2 # (21 - 11) / 2 = 5
-  label_padding = label_size / scale # 21 / 3 = 7
+  padding = abs(image_size - label_size) / 2 # eg. (21 - 11) / 2 = 5
+  label_padding = label_size / scale # eg. 21 / 3 = 7
 
-  pic_index = 2 # Index of image based on lexicographical order in data folder
+  pic_index = 2 # Index of image based on lexicographic order in data folder
   input_, label_ = preprocess(data[pic_index], config.scale)
 
   if len(input_.shape) == 3:
@@ -256,7 +268,8 @@ def test_input_setup(config):
     for y in range(0, w - image_size - padding + 1, stride):
       ny += 1
       sub_input = input_[x + padding : x + padding + image_size, y + padding : y + padding + image_size]
-      sub_label = label_[(x + label_padding) * scale : (x + label_padding) * scale + label_size, (y + label_padding) * scale : (y + label_padding) * scale + label_size]
+      x_loc, y_loc = x + label_padding, y + label_padding
+      sub_label = label_[x_loc * scale : x_loc * scale + label_size, y_loc * scale : y_loc * scale + label_size]
 
       sub_input = sub_input.reshape([image_size, image_size, 1])
       sub_label = sub_label.reshape([label_size, label_size, 1])
@@ -271,6 +284,7 @@ def test_input_setup(config):
 
   return nx, ny
 
+# You can ignore, I just wanted to see how much space all the parameters would take up
 def save_params(sess, weights, biases):
   param_dir = "params/"
 
@@ -287,6 +301,7 @@ def save_params(sess, weights, biases):
         for input_channel in range(len(filter_weights)):
           for output_channel in range(len(filter_weights[input_channel])):
             weight_value = filter_weights[input_channel][output_channel]
+            # Write bytes directly to save space 
             weight_file.write(struct.pack("f", weight_value))
           weight_file.write(struct.pack("x"))
 
@@ -298,13 +313,16 @@ def save_params(sess, weights, biases):
     bias_file.write("Layer {}\n".format(layer))
     layer_biases = sess.run(biases[layer])
     for bias in layer_biases:
+      # Can write as characters due to low bias parameter count
       bias_file.write("{}, ".format(bias))
     bias_file.write("\n\n")
 
   bias_file.close()
 
-# Merges sub-images back into original image size
 def merge(images, size):
+  """
+  Merges sub-images back into original image size
+  """
   h, w = images.shape[1], images.shape[2]
   img = np.zeros((h * size[0], w * size[1], 1))
   for idx, image in enumerate(images):
@@ -314,8 +332,10 @@ def merge(images, size):
 
   return img
 
-# Converts array to image and saves it
 def array_image_save(array, image_path):
+  """
+  Converts np array to image and saves it
+  """
   image = Image.fromarray(array)
   if image.mode != 'RGB':
     image = image.convert('RGB')
