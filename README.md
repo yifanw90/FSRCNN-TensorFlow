@@ -25,20 +25,21 @@ Also includes script `expand_data.py` which scales and rotates all the images in
 
 ## Result
 
-<br>
 Original butterfly image:
-<br>
-![orig](https://github.com/drakelevy/FSRCNN-Tensorflow/blob/master/result/original.png?raw=true)<br>
+![orig](https://github.com/drakelevy/FSRCNN-Tensorflow/blob/master/result/original.png?raw=true)
+
+
 Bicubic interpolated image:
-<br>
-![bicubic](https://github.com/drakelevy/FSRCNN-Tensorflow/blob/master/result/bicubic.png?raw=true)<br>
+![bicubic](https://github.com/drakelevy/FSRCNN-Tensorflow/blob/master/result/bicubic.png?raw=true)
+
+
 Super-resolved image:
-<br>
 ![srcnn](https://github.com/drakelevy/FSRCNN-Tensorflow/blob/master/result/fsrcnn.png?raw=true)
 
 ## References
+
 * [tegg89/SRCNN-Tensorflow](https://github.com/tegg89/SRCNN-Tensorflow)
-<br>
+
 * [liliumao/Tensorflow-srcnn](https://github.com/liliumao/Tensorflow-srcnn) 
-<br>
+
 * [carpedm20/DCGAN-tensorflow](https://github.com/carpedm20/DCGAN-tensorflow) 
